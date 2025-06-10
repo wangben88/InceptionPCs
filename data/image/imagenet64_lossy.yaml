@@ -1,0 +1,42 @@
+target: data.image.data.DataModuleFromConfig
+params:
+  batch_size: 64
+  num_workers: 0
+  drop_last: true
+  pin_memory: true
+  sampler: __subset__:60000
+  train:
+    target: data.image.data.ImageNet64Train
+    params:
+      root: data/ImageNet
+      transform_fns:
+        - target: data.image.transforms.Select
+          params:
+            key: img
+        - target: data.image.transforms.Patchify
+          params:
+            patch_size: 16
+            aligned: true
+        - target: data.image.transforms.RGB2YCoCg
+        - target: data.image.transforms.Quantize
+          params:
+            num_levels: 256
+        - target: data.image.transforms.Flatten
+  validation:
+    target: data.image.data.ImageNet64Validation
+    params:
+      root: data/ImageNet
+      transform_fns:
+        - target: data.image.transforms.Select
+          params:
+            key: img
+        - target: data.image.transforms.RGB2YCoCg
+        - target: data.image.transforms.Quantize
+          params:
+            num_levels: 256
+        - target: data.image.transforms.Patchify
+          params:
+            patch_size: 16
+            aligned: true
+        - target: data.image.transforms.Flatten
+    
